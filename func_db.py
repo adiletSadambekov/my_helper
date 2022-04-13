@@ -3,7 +3,7 @@ import time
 import sqlite3
 
 
-class Database_interface:
+class DatabaseInterface:
     def __init__(self):
         try:
             self.conn = sqlite3.connect('users.db')
@@ -44,13 +44,13 @@ class Database_interface:
         finally:
             self.conn.close()
 
-    def get_all(self):
+    def get_all_id_user(self):
         try:
-            exe = self.con.execute('select * from user;')
-            data = exe.fetchall()
-            return data, True
-        except:
-            print('happened exeption')
-            return False
+            exe = self.conn.execute('select id_user from user;')
+            id_users = exe.fetchall()
+            return id_users, True
+        #except:
+        #    print('happened exeption')
+        #    return False
         finally:
             self.conn.close()

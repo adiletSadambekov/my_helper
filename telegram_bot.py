@@ -1,9 +1,10 @@
 from config import API_TOKEN
 from parser import PageParse
-from func_db import Database_interface
+from func_db import DatabaseInterface
 
 import logging
-
+import asyncio
+from datetime import datetime
 from aiogram import Bot, Dispatcher, executor, types
 
 
@@ -13,14 +14,30 @@ bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
 
+async def  mailings(): #send a message to users
+    while True:
+        times = PageParse().get_items_times()
+        users = DatabaseInterface().get_all_id_user()
+        for id in users:
+            await bot.send_message(id, '\n'.join(times))
+        asyncio.sleep(30)
+
+
+
 @dp.message_handler(commands=['start', 'help'])
 async def start_bot(message: types.Message):
     form = message.from_user
-    add = Database_interface().add_user(form.id, form.username, form.first_name, 1)
+    add = DatabaseInterface().add_user(form.id, form.username, form.first_name, 1)
     if add:
         await message.reply(add[1])
     else:
         await message.reply(add[1])
+    while True:
+        times = PageParse().get_items_times()
+        users = DatabaseInterface().get_all_id_user()
+        for id in users:
+            await bot.send_message(id, '\n'.join(times))
+        asyncio.sleep(30)
 
 @dp.message_handler(commands='time')
 async def get_times(message: types.Message):
