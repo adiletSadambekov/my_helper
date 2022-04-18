@@ -24,9 +24,7 @@ async def  mailings(): #send a message to users
         chat_id = DatabaseInterface().get_chat_id()
         if chat_id:
             for chat_id in chat_id[0]:
-                asyncio.sleep(3)
                 await bot.send_message(chat_id, '\n'.join(times))
-                asyncio.sleep(3)
         await asyncio.sleep(30)
 
 
