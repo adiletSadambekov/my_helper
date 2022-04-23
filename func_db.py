@@ -4,17 +4,52 @@ from sqlalchemy.orm import sessionmaker
 #importing models
 from models import Users
 
+#importin utills
+import os
+from datetime import datetime
+
 from config import text_new_user_successfully, text_new_user_invalid, text_repeat_start, engin
 import time
 import sqlite3
 
 
-def add_user():
-    new_user = Users(id_user=343, username='@adi', userlogin='adi_kg')
-    Dbsession = sessionmaker(bind=engin)
-    s = Dbsession()
-    s.add(new_user)
-    s.commit()
+class DataBaseORM:
+
+    now = datetime.now()
+
+    def add_user(self, id_user, username, userlogin):
+        try:
+            new_user = Users(id_user=id_user, username=username, userlogin=userlogin)
+            Session = sessionmaker(bind=engin)
+            with Session() as s:
+                s.add(new_user)
+                s.commit()
+            return True
+        except Exception as e:
+            if os.path.exists('logfile_db.txt'):
+                with open('logfile_db.txt', 'a') as o:
+                    o.write(str(self.now)+' '+str(e)+'\n')
+            else:
+                with open('logfile_db.txt', 'a') as o:
+                    o.write(str(self.now)+' '+e+'\n')
+            return False
+
+
+    def get_all(self):
+        try:
+            Session = sessionmaker(engin)
+            with Session() as s:
+                query = s.query(Users).all()
+                return query.fetchall()
+        except Exception as e:
+            if os.path.exists('logfile_db.txt'):
+                with open('logfile_db.txt', 'a') as o:
+                    o.write(str(self.now)+' '+e+'\n')
+            else:
+                with open('logfile_db.txt', 'x') as o:
+                    o.write(self.now+' '+e+'\n')
+        
+
 
 
 
