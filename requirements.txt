@@ -1,5 +1,5 @@
 bs4
 requests
-aiorgam
+-U aiorgam
 sqlalchemy
 

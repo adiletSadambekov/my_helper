@@ -15,7 +15,3 @@ class Users(Base):
     username = Column(String)
     userlogin = Column(String)
     is_active = Column(Boolean, default=True)
-
-    def __repr__(self):
-        return "<User: (%s, %s, %s, %s)>" % (self.id_user, self.username, self.userlogin, self.is_active)
-    

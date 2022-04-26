@@ -1,6 +1,6 @@
-from config import API_TOKEN, comands
+from config import API_TOKEN, text_for_help
 from parser import PageParse
-from func_db import DatabaseInterface
+from func_db import DataBaseORM
 
 import logging
 import asyncio
@@ -16,39 +16,40 @@ dp = Dispatcher(bot)
 
 
 
-async def  mailings(for_sleep): #send a message to users
+async def  mailings(for_sleep): # send a message to users
     while True:
+
         times = PageParse().get_items_times()
-        chat_id = DatabaseInterface().get_chat_id()
+        chat_id = DataBaseORM().get_all_active()
         if chat_id:
             for chat_id in chat_id:
-                await bot.send_message(chat_id[0], '\n\n'.join(times))
+                try:
+                    await bot.send_message(chat_id.id_user, '\n\n'.join(times))
+                except:
+                    DataBaseORM().unsubscribe(chat_id.id_user)
         await asyncio.sleep(for_sleep)
 
 
 
-@dp.message_handler(commands=['start'])
+@dp.message_handler(commands=['start']) # function for subscribe
 async def start_bot(message: types.Message):
     form = message.from_user
-    add = DatabaseInterface().add_user(form.id, form.username, form.first_name, message.chat.id)
+    add = DataBaseORM().add_user(form.id, form.username, form.first_name)
     if add:
-        await message.reply(add[1])
+        await message.reply('Вы подписались на рассылки времени намаза')
     else:
-        await message.reply(add[1])
+        await message.reply('Не удалось подписаться на рассылку времени намаза')
 
 
-@dp.message_handler(commands=['unsubscribe'])
+@dp.message_handler(commands=['unsubscribe']) # function for unsubscribe
 async def unsub(message: types.Message):
-    uns = DatabaseInterface().not_active(message.from_user.id)
-    if uns:
-        await message.reply(uns[1])
-    else:
-        await message.reply('Happened error')
+    uns = DataBaseORM().unsubscribe(message.from_user.id)
+    await message.reply(uns[1])
 
 
 @dp.message_handler(commands=['help'])
 async def helper(message: types.Message):
-    await message.reply(f"I can fulfill folowing comands: {comands}")
+    await message.reply(text_for_help)
 
 
 
