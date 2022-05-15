@@ -16,7 +16,7 @@ dp = Dispatcher(bot)
 
 
 
-async def  mailings(for_sleep): # send a message to users
+async def  mailings(time_sleep): # send a message to users
     while True:
 
         times = PageParse().get_items_times()
@@ -27,7 +27,7 @@ async def  mailings(for_sleep): # send a message to users
                     await bot.send_message(chat_id.id_user, '\n\n'.join(times))
                 except:
                     DataBaseORM().unsubscribe(chat_id.id_user)
-        await asyncio.sleep(for_sleep)
+        await asyncio.sleep(time_sleep)
 
 
 
@@ -35,16 +35,14 @@ async def  mailings(for_sleep): # send a message to users
 async def start_bot(message: types.Message):
     form = message.from_user
     add = DataBaseORM().add_user(form.id, form.username, form.first_name)
-    if add:
-        await message.reply('Вы подписались на рассылки времени намаза')
-    else:
-        await message.reply('Не удалось подписаться на рассылку времени намаза')
+    await message.reply(add)
+
 
 
 @dp.message_handler(commands=['unsubscribe']) # function for unsubscribe
 async def unsub(message: types.Message):
     uns = DataBaseORM().unsubscribe(message.from_user.id)
-    await message.reply(uns[1])
+    await message.reply(uns)
 
 
 @dp.message_handler(commands=['help'])

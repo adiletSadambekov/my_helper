@@ -34,7 +34,7 @@ class DataBaseORM:
                         return 'Вы и так подписаны'
                 s.add(new_user)
                 s.commit()
-            return  'Вы успешно подписались на рассылку'
+                return  f"Дорогой(ая) {username}, вы успешно подписались на рассылку"
         except Exception as e:
             write_excep(e, 'logfile_db.txt', 'add_user')
             return 'Не удалось подписаться'
@@ -106,7 +106,7 @@ class DataBaseORM:
                     s.commit()
                     return 'Успешно отписались'
                 else:
-                    return 'Такого пользавателя не существует'
+                    return 'Вы и так не подписаны на рассылку'
         except Exception as e:
             write_excep(e, 'logfile_db.txt', 'unsubscribe')
             return False
