@@ -100,13 +100,17 @@ class DataBaseORM:
         try:
             Session = sessionmaker(engin)
             with Session() as s:
-                exists_ = s.query(Users).where(Users.id_user == id_user).scalar()
-                if exists_:
-                    exists_.is_active = False
-                    s.commit()
-                    return 'Успешно отписались'
+                exists = s.query(Users).where(Users.id_user == id_user).scalar()
+                if exists:
+                    if exists.is_active == False:
+                        return 'Вы и так отписаны от рассылку'
+                    elif exists.is_active == True:
+                        exists.is_active = False
+                        s.commit()
+                        return 'Вы успешно отписались от рассылки'
                 else:
-                    return 'Вы и так не подписаны на рассылку'
+                    return 'Вы и так не подписаны на рассылку. Чтобы подписаться на рассылку\
+                        необходимо ввести комманду /start'
         except Exception as e:
             write_excep(e, 'logfile_db.txt', 'unsubscribe')
             return False

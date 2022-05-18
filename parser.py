@@ -19,7 +19,5 @@ class PageParse:
         items = self.get_page_parse().findAll('div', class_='right floated content prayerTime')
         for n, d in enumerate(items):
             times.append(names_items[n]+d.text)
-            if n == 5:
-                print(type(d))
         times = [i.replace('\t', '') for i in times]
         return times
