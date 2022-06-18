@@ -2,6 +2,7 @@ from datetime import datetime
 import os
 
 
+
 def write_excep(excep, name_file, name_procc): # function for adding wrtite in an logfile
     now = datetime.now()
     if os.path.exists(name_file):

@@ -1,10 +1,8 @@
 from config import API_TOKEN, text_for_help
-from parser import PageParse
-from func_db import DataBaseORM
+from func_db import DataBaseORM, DBForItems
 
 import logging
 import asyncio
-from datetime import datetime
 from aiogram import Bot, Dispatcher, executor, types
 
 
@@ -15,19 +13,20 @@ dp = Dispatcher(bot)
 
 
 
-
 async def  mailings(time_sleep): # send a message to users
+    DBForItems().update_items()
     while True:
 
-        times = PageParse().get_items_times()
+        times = DBForItems().get_items()
         chat_id = DataBaseORM().get_all_active()
         if chat_id:
             for chat_id in chat_id:
                 try:
-                    await bot.send_message(chat_id.id_user, '\n\n'.join(times))
+                    await bot.send_message(chat_id.id_user, times.items)
                 except:
                     DataBaseORM().unsubscribe(chat_id.id_user)
         await asyncio.sleep(time_sleep)
+
 
 
 
@@ -53,8 +52,8 @@ async def helper(message: types.Message):
 
 @dp.message_handler(commands='time')
 async def get_times(message: types.Message):
-    times = PageParse().get_items_times()
-    await message.reply('\n'.join(times))
+    times = DBForItems().get_items()
+    await message.reply(times.items)
 
 @dp.message_handler(commands="test1")
 async def cmd_test1(message: types.Message):

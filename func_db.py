@@ -1,11 +1,12 @@
 # importing utills
 from utills import write_excep
+import json
 
 #importing library orm system sqlalchemy
 from sqlalchemy.orm import sessionmaker
 
 #importing models
-from models import Users
+from models import Users, Times
 
 #importin utills
 from datetime import datetime
@@ -13,11 +14,17 @@ from datetime import datetime
 # configutation data
 from config import engin
 
+from parser import PageParse
 
 
-class DataBaseORM:
+
+class DBForUser:
 
     now = datetime.now()
+
+    def __init__(self):
+        Session = sessionmaker(engin)
+        self.s = Session()
 
     def add_user(self, id_user, username, userlogin):
         try:
@@ -114,3 +121,75 @@ class DataBaseORM:
         except Exception as e:
             write_excep(e, 'logfile_db.txt', 'unsubscribe')
             return False
+    
+
+    def get_users_in_json(self):
+        try:
+            users = self.s.query(Users).all()
+            with open('users.json', 'w') as f:
+                data = {'users':{'user':{
+                    'id': n.id,
+                    'id_user': n.id_user,
+                    'username': n.username,
+                    'userlogin': n.userlogin,
+                    'is_active': n.is_active }for n in users}}
+
+                f.write(f"{json.dumps(data)}")
+            return True
+        except Exception as e:
+            write_excep(e, 'logfile_db.txt', 'DBForUser.get_users_in_json')
+            return False
+
+    
+    def __del__(self):
+        self.s.close()
+
+
+class DBForItems:
+
+    def __init__(self):
+        self.Session = sessionmaker(engin)
+        self.s = self.Session()
+
+    def add_items(self):
+        try:
+            time_items = PageParse().get_items_times()
+            if time_items:
+                model_times = Times(items='\n\n'.join(time_items))
+                self.s.add(model_times)
+                self.s.commit()
+                return True
+            else:
+                return 'Warning'
+        except Exception as e:
+            write_excep(e, 'logfile_db.txt', 'DBForItems.add_items')
+            return False
+    
+    def update_items(self):
+        try:
+            time_items = PageParse().get_items_times()
+            if time_items:
+                items_collection = '\n\n'.join(time_items)
+                old_items = self.s.query(Times).where(Times.id == 1).scalar()
+                old_items.items = items_collection
+                self.s.commit()
+                write_excep('Times is updated in db', 'message.txt', 'update')
+                return True
+            else:
+                return 'Warning'
+        except Exception as e:
+            write_excep(e, 'logfile_db.txt', 'DBForItem.update_items')
+            return False
+    
+    def get_items(self):
+        try:
+            items = self.s.query(Times).where(Times.id == 1).scalar()
+            return items
+        except Exception as e:
+            write_excep(e, 'ligfile_db.txt', 'DBForItems.get_items')
+            return False
+    
+    def __del__(self):
+        self.s.close()
+    
+
