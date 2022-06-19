@@ -1,5 +1,5 @@
 # importing utills
-from utills import write_excep
+from utills.utills import write_excep
 import json
 
 #importing library orm system sqlalchemy
@@ -12,7 +12,7 @@ from models import Users, Times
 from datetime import datetime
 
 # configutation data
-from config import engin
+from data import engin
 
 from parser import PageParse
 
@@ -26,7 +26,7 @@ class DBForUser:
         Session = sessionmaker(engin)
         self.s = Session()
 
-    def add_user(self, id_user, username, userlogin):
+    def subscribe(self, id_user, username, userlogin):
         try:
             new_user = Users(id_user=id_user, username=username, userlogin=userlogin)
             Session = sessionmaker(engin)
