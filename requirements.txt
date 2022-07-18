@@ -1,0 +1,7 @@
+Pillow
+bs4
+requests
+sqlalchemy
+python-dotenv
+aiorgam
+
