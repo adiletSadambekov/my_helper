@@ -16,12 +16,15 @@ from users.conf.config import engin
 
 from parser.parser import PageParse"""
 
+from data import config
 from .base import CreateAndCloseSession
 from .models import *
 
 from parser.parser import ItemsParse
 
 import logging
+import json
+
 logging.getLogger('App.db.base_db_funcs')
 
 
@@ -179,6 +182,23 @@ class ForUsers(CreateAndCloseSession):
                 self.s.commit()
             else:
                 None
+        except Exception as e:
+            logger.exception(e)
+            return False
+    
+
+
+class ForAdmin(CreateAndCloseSession):
+    logging.getLogger('App.db.base_db_funcs')
+
+    def get_all_users(self) -> list:
+        logger = logging.getLogger('App.db.base_db_funcs.get_users_in_json')
+        try:
+            users = self.s.query(Users).all()
+            if users:
+                return users
+            else:
+                return None
         except Exception as e:
             logger.exception(e)
             return False
