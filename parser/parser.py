@@ -24,7 +24,7 @@ class ItemsParse:
     def get_page_parse(self):
         return BeautifulSoup(self.page.content, 'html.parser')
     
-    def get_items_times(self):
+    def get_items_times(self) -> list:
         logger = logging.getLogger(
             'App.parser.parser.ItemsParse.get_items_times')
         try:
