@@ -178,8 +178,12 @@ class ForUsers(CreateAndCloseSession):
         try:
             user = self.get_user(id_user)
             if user:
-                user.is_active = False
-                self.s.commit()
+                if user.is_active == False:
+                    return None
+                else:
+                    user.is_active = False
+                    self.s.commit()
+                return True
             else:
                 None
         except Exception as e:

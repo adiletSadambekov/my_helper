@@ -28,12 +28,12 @@ async def subscribe(message: types.Message):
     logger = logging.getLogger('App.handlers.users.default_commands.subscribe')
     try:
         sub = ForUsers(engine).add_user(message.from_user)
-        if sub:
-            await message.answer('Вы успешно подписались на рассылку')
         if sub == 3:
             await message.answer('Вы снова подписались на рассылку')
         if sub == 2:
             await message.answer('Вы и так подписаны')
+        if sub == True:
+            await message.answer('Вы успешно подписались на рассылку')
     except Exception as e:
         logger.exception(e)
 
@@ -47,8 +47,6 @@ async def unsubscribe(message: types.Message):
             await message.answer('Вы успешно отписались от рассылок')
         if user == None:
             await message.answer('Вы и так не подписаны на рассылки')
-        else:
-            await message.answer('Что-то пошло не так. Попробуйте чуть позже')
     except Exception as e:
         logger.exception(e)
 

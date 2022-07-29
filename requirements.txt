@@ -1,7 +1,8 @@
-Pillow
-bs4
-requests
-sqlalchemy
-python-dotenv
-aiorgam
+Pillow 9.2.0
+bs4 0.0.1
+requests 2.27.1
+sqlalchemy 1.4.35
+python-dotenv 0.20.0
+alembic 1.8.0
+aiorgam 2.19
 

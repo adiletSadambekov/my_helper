@@ -13,7 +13,6 @@ async def auto_generate_image(point_of_send: datetime) -> None:
             now = datetime.now()
             intervals_result = now - point_of_send
             first_started = False
-            print('Worked first' + str(intervals_result.seconds))
             close_turn = (one_turn + 180) - intervals_result.seconds
             await asyncio.sleep(close_turn)
         else:

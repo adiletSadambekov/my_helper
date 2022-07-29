@@ -1,4 +1,3 @@
-from tkinter import E
 from data import config
 
 from bs4 import BeautifulSoup
