@@ -23,3 +23,4 @@ async def get_all_users(message: types.Message):
             await message.reply('Что-то пошло не так')
     else:
         await message.reply('У вас нет прав на эту команду')
+

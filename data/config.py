@@ -17,8 +17,18 @@ GREETINGS_TEXT = str(os.getenv('GREETINGS_TEXT'))
 
 HELP_TEXT = str(os.getenv('HELP_TEXT'))
 
-ITEMS_NAME = str(os.getenv('NAME_ITEMS'))
-
 PATH_CURR_PHOTO = str(os.getenv('PATH_CURR_PHOTO'))
 
 LIST_USERS = str(os.getenv('LIST_USERS'))
+
+LIST_ADMINS_COMMANDS = str(os.getenv('LIST_ADMINS_COMMANDS'))
+
+URL_FOR_PARSER = str(os.getenv('URL_FOR_PARSING'))
+
+USER_AGENT = str(os.getenv('USER_AGENT'))
+
+ITEMS_NAMES = str(os.getenv('ITEMS_NAMES')).replace(' ', '').split(',')
+
+ITEMS_NAME = str(os.getenv('ITEMS_NAME'))
+
+BISHKEK_TZ = str(os.getenv('BISHKEK_TZ'))

@@ -8,7 +8,7 @@ from load import dp
 from data import config
 import logging
 
-logging.getLogger('App.handlers.users.default_commands')
+logging.getLogger('App.handlers.users.base_handlers')
 
 engine = create_engine(config.PATH_DB)
 

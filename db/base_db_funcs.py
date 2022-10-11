@@ -28,56 +28,6 @@ import json
 logging.getLogger('App.db.base_db_funcs')
 
 
-class ForItems(CreateAndCloseSession):
-    logger = logging.getLogger('App.db.base_db_funcs.ForItems')
-    def add_actual_items(
-        self,
-        items: ItemsParse.get_items_times) -> bool:
-
-        logger = logging.getLogger(
-            'App.db.base_db_funcs.ForItems.add_actual')
-
-        try:
-            times = Times(items='\n'.join(items))
-            self.s.add(times)
-            self.s.commit()
-            return True
-        except Exception as e:
-            logger.exception(e)
-            return False
-    
-    def update_items(self, items: ItemsParse.get_items_times) -> bool:
-        logger = logging.getLogger(
-            'App.db.base_db_funcs.ForItems.update_items')
-
-        try:
-            old_items = self.s.query(Times).where(Times.id == 1).scalar()
-            if old_items:
-                old_items.items = '\n\n'.join(items)
-                self.s.commit()
-                return True
-            else:
-                return None
-        except Exception as e:
-            logger.exception(e)
-            return False
-    
-    def get_items(self) -> str:
-        logger = logging.getLogger(
-            'App.db.base_db_funcs.ForItems.get_items')
-
-        try:
-            items = self.s.query(Times).where(Times.id == 1).scalar()
-            if items:
-                return items
-            else:
-                None
-        except Exception as e:
-            logger.exception(e)
-            return False
-
-        
-
 
 class ForUsers(CreateAndCloseSession):
     logger = logging.getLogger('App.db.base_db_funcs.ForUsers')
@@ -193,7 +143,18 @@ class ForUsers(CreateAndCloseSession):
 
 
 class ForAdmin(CreateAndCloseSession):
-    logging.getLogger('App.db.base_db_funcs')
+    logging.getLogger('App.db.base_db_funcs.ForAdmin')
+
+    def is_admin(self, id_user: int) -> bool:
+        logger = logging.getLogger('App.db.base_db_funcs.ForAdmin.is_admin')
+        try:
+            admin = self.s.query(Users).where(Users.id_user == id_user).scalar()
+            if admin.permession == 'admin':
+                return True
+            else:
+                return False
+        except Exception as e:
+            logger.exception(e)
 
     def get_all_users(self) -> list:
         logger = logging.getLogger('App.db.base_db_funcs.get_users_in_json')
