@@ -2,6 +2,9 @@ from data import config
 
 from aiogram import Bot, types, Dispatcher
 
-bot = Bot(token=config.API_TOKEN, parse_mode=types.ParseMode.HTML)
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
-dp = Dispatcher(bot)
+bot = Bot(token=config.API_TOKEN, parse_mode=types.ParseMode.HTML)
+storage = MemoryStorage()
+
+dp = Dispatcher(bot, storage=storage)

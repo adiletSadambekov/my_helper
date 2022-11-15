@@ -6,7 +6,7 @@ import logging
 
 logging.getLogger('App.utills.notify_owner')
 
-async def utill_notify(dp: Dispatcher, user_id, text_message: str):
+async def notify_owner(dp: Dispatcher, user_id: int, text_message: str):
     logger = logging.getLogger('App.utills.notify_owner.utill_notify')
     try:
         await dp.bot.send_message(user_id, text_message)

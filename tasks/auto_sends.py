@@ -1,43 +1,62 @@
-from db.base_db_funcs import ForUsers
+from ast import ExceptHandler
+import os
+from db.base_db_funcs import UsersBaseFunctions, CityesBaseFunctions
 from data import config
 
-from datetime import datetime as dt
-import datetime
-import pytz
+from datetime import time as time_model
+
+from utills.utills import get_interval
+from utills.notifyes import notify_owner
+from utills.base_messages import get_items_message
+from utills.notifyes import notify_owner
 
 import asyncio
 import logging
-from aiogram import types, Dispatcher
+from aiogram import Dispatcher
 from sqlalchemy import create_engine
 
-logging.getLogger('App.tasks.auto_sends')
+path_log = 'App.tasks.auto_sends'
+
+logging.getLogger(path_log)
 
 
-async def send_items(dp: Dispatcher, time_of_send: datetime.time):
-    logger = logging.getLogger('App.tasks.auto_sends.send_items')
-    first_start = True
-    one_turn = 86400
+
+async def sends_times(dp: Dispatcher, time_for_sends: time_model):
+    logger = logging.getLogger(path_log + '.sends_times')
+    first_started = True
+    tornover = config.TURNOVER
+    engine = create_engine(config.PATH_DB, echo=False)
     while True:
-        if first_start:
-            time_zone = pytz.timezone(config.BISHKEK_TZ)
-            now = dt.now(time_zone)
-            point_dt = dt(
-                now.year, now.month, now.day,
-                time_of_send.hour, time_of_send.minute
-            )
-            point_datetime = time_zone.localize(point_dt)
-            interval = point_datetime - now
-            first_start = False
-            await asyncio.sleep(interval.seconds)
-        else:
-            engine = create_engine(config.PATH_DB, echo=False)
-            img = 'static/images/done/current_items.jpg'
-            db = ForUsers(engine)
-            users = ForUsers(engine).get_all_active()
-            if users != None and users != False:
-                for i in users:
+        try:
+            if first_started:
+                interval = get_interval(time_for_sends, config.BISHKEK_TZ)
+                first_started = False
+                await asyncio.sleep(interval.seconds)
+            else:
+                db_user = UsersBaseFunctions(engine)
+                db_city = CityesBaseFunctions(engine)
+                cityes = db_city.get_all_cityes()
+                for city in cityes:
                     try:
-                        await dp.bot.send_photo(i.id_user, types.InputFile(img))
-                    except:
-                        await db.unsubscribe(i.id_user)
-            await asyncio.sleep(one_turn)
+                        users_in_city = db_user.get_all_users_by_city(city.id)
+                        if users_in_city:
+                            text_message = get_items_message(city.id)
+                            for user in users_in_city:
+                                try:
+                                    await dp.bot.send_message(
+                                        user.id_in_tg,
+                                        text_message)
+                                except Exception as e:
+                                    db_user.unsubscribe(user.id)
+                                    logger(e)
+                    except KeyError as e:
+                        notify_owner(dp, config.OWNER_ID,
+                        'City is not added in list')
+                        logger.exception(e)
+                    except Exception as e:
+                        notify_owner(dp, config.OWNER_ID,
+                        'Unknown error')
+                        logger.exception(e)
+        except Exception as e:
+            logger.exception(e)
+        await asyncio.sleep(tornover)

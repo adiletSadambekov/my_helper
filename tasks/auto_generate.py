@@ -1,35 +1,64 @@
-from datetime import datetime
+from datetime import time as time_model
+import json
 import logging
-import pytz
 import asyncio
+import random
+import time
 
 from data import config
 
-from utills.generate_images import generate_for_items
-from parser.parser import ParsingNTimes, ItemsParse
+from utills.utills import get_interval
+from parser.parser import ParsingNTimes
+from db.models import City
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 
 logging.getLogger('App.tasks.auto_generate')
 
-async def generate_image(time_of_generate: datetime):
-    logger = logging.getLogger('App.tasks.auto_generate.generate_image')
+
+async def save_times(time_for_update: time_model):
+    one_turn = 86400
+    logger = logging.getLogger('App.tasks.auto_generate.save_times')
     first_started = True
     one_turn = 86400
+    engine = create_engine(config.PATH_DB, echo=False)
     while True:
         if first_started:
-            '''
-            namazes_times = ParsingNTimes().formatter_for_image()
-            generate_for_items(1, '\n\n'.join(namazes_times))
-            '''
-            now = datetime.now(pytz.timezone(config.BISHKEK_TZ))
-            diffirence = time_of_generate - now
-            first_started = False
-            await asyncio.sleep(diffirence.seconds)
-        else:
+            interval = get_interval(time_for_update, config.BISHKEK_TZ)
+            Session = sessionmaker(engine)
+            s = Session()
             try:
-                namazes_times = ParsingNTimes().formatter_for_image()
-                generate_for_items(1, '\n\n'.join(namazes_times)) 
-                logger.info('Times is updates')
+                cityes = s.query(City).all()
+                times_in_dict = {}
+                for city in cityes:
+                    try:
+                        random_intrval = random.randint(1, 5)
+                        items = ParsingNTimes().get_to_dict(city.name)
+                        times_in_dict[city.id] = items
+                        time.sleep(random_intrval)
+                    except Exception as e:
+                        logger.exception(e)
+                with open(config.PATH_TIMES_FILE, 'w') as f:
+                    json.dump(times_in_dict, f)
             except Exception as e:
                 logger.exception(e)
+            first_started = False
+            await asyncio.sleep(interval.seconds)
+        else:
+            s = Session()
+            cityes = s.query(City).all()
+            times_in_dict = {}
+            for city in cityes:
+                try:
+                    random_intrval = random.randint(1, 5)
+                    items = ParsingNTimes().get_to_dict(city.name)
+                    times_in_dict[city.name] = items
+                    time.sleep(random_intrval)
+                except Exception as e:
+                    logger.exception(e)
+            with open(config.PATH_TIMES_FILE, 'w') as f:
+                json.dump(items, f)
             await asyncio.sleep(one_turn)
+            

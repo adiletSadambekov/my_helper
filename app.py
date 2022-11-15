@@ -26,20 +26,18 @@ async def on_start(dp):
 
 if __name__ == '__main__':
     from handlers import dp
-    from tasks.auto_sends import send_items
-    from tasks.auto_generate import generate_image
+    from tasks.auto_sends import sends_times
+    from tasks.auto_generate import save_times
     from aiogram import executor
     import asyncio
 
-    dt_for_generate = dt(2022, 10, 11, 5, 13)
-    time_zone = pytz.timezone('Europe/Moscow')
-    point_datetime = time_zone.localize(dt_for_generate, is_dst=True)
-    time_for_sends = datetime.time(8, 14)
+    time_for_update = datetime.time(0, 3)
+    time_for_sends = datetime.time(0, 10)
     try:
         logger.info('Bot is started')
         loop1 = asyncio.get_event_loop()
-        loop1.create_task(send_items(dp, time_for_sends))
-        loop1.create_task(generate_image(point_datetime))
+        loop1.create_task(sends_times(dp, time_for_sends))
+        loop1.create_task(save_times(time_for_update))
         executor.start_polling(dp, on_startup=on_start)
         logger.info('Bot is disabled')
     except Exception as e:
