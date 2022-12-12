@@ -1,5 +1,5 @@
 from data import config
-from db.base_db_funcs import ForAdmin
+#from db.base_db_funcs import ForAdmin
 
 import json
 import logging
@@ -7,7 +7,7 @@ import logging
 from sqlalchemy import create_engine
 
 logging.getLogger('App.utills.admins_tools')
-
+"""
 def save_users_json() -> None:
     logger = logging.getLogger('App.utills.admins_tools.save_users_json')
     users_in_json = {}
@@ -29,3 +29,4 @@ def save_users_json() -> None:
         logger.exception(e)
         return False
 
+"""

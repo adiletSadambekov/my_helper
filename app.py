@@ -1,6 +1,4 @@
-from datetime import datetime as dt
 import datetime
-import pytz
 from utills.notifyes import on_start_bot_owner
 
 from data import config

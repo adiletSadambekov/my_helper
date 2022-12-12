@@ -54,11 +54,11 @@ async def save_times(time_for_update: time_model):
                 try:
                     random_intrval = random.randint(1, 5)
                     items = ParsingNTimes().get_to_dict(city.name)
-                    times_in_dict[city.name] = items
+                    times_in_dict[city.id] = items
                     time.sleep(random_intrval)
                 except Exception as e:
                     logger.exception(e)
             with open(config.PATH_TIMES_FILE, 'w') as f:
-                json.dump(items, f)
+                json.dump(times_in_dict, f)
             await asyncio.sleep(one_turn)
             

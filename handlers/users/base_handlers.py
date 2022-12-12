@@ -1,5 +1,5 @@
 from db.base_db_funcs import UsersBaseFunctions
-from handlers.users_states import UserSubscribe
+from .states import UserSubscribe
 from handlers.users.key_boards import create_cityes_buttons
 from aiogram.types import ReplyKeyboardRemove
 
@@ -24,30 +24,27 @@ engine = create_engine(config.PATH_DB, echo=False)
 
 db_user = UsersBaseFunctions(engine)
 
-@dp.message_handler(text='/start')
+@dp.message_handler(commands='start')
 async def first_greeting(message: types.Message):
     text = config.GREETINGS_TEXT
-    try:
-        db_user.add_user(message.from_user)
-        await message.answer(text % (message.from_user.full_name))
-    except ErrorAddUser:
-        await message.answer(config.HELP_TEXT)
+    await message.answer(text % (message.from_user.full_name))
 
 
-@dp.message_handler(text='/help')
+@dp.message_handler(commands='help')
 async def for_help(message: types.Message):
     await message.answer(config.HELP_TEXT)
 
 
-@dp.message_handler(text='/subscribe')
+@dp.message_handler(commands='subscribe')
 async def subscribe(message: types.Message):
-    user = db_user.get_user(int(message.from_user.id))
-    if user:
+    try:
         markup = create_cityes_buttons()
         await message.reply('Выберите ваш город', reply_markup=markup)
         await UserSubscribe.city_id.set()
-    else:
-        await message.reply('Что-то пошло не так, попробуйте чуть позже или обратитесь к админу')
+    except:
+        #Add logger
+        await message.reply('Что-то пошло не так, \
+            попробуйтечуть позже или обратитесь к админу')
 
 
 @dp.message_handler(state=UserSubscribe.city_id)
@@ -60,23 +57,26 @@ async def get_city(message: types.Message, state: FSMContext):
         subscribe_user = db_user.subscribe(message.from_user,
         id_city=get_id_city)
         if subscribe_user:
-            await message.reply('Вы успешно подписались на рассылку', reply_markup=ReplyKeyboardRemove())
+            await message.reply('Вы успешно подписались на рассылку',
+            reply_markup=ReplyKeyboardRemove())
         else:
             await message.answer('Что-то пошло не так, попробуйте позже')
         await state.finish()
     except ValueError:
         markup = create_cityes_buttons()
-        await message.answer('Выбран не существующий город. \nВыберите ваш город снова', reply_markup=markup)
+        await message.answer('Выбран не существующий город. \
+            \nВыберите ваш город',
+        reply_markup=markup)
         await UserSubscribe.city_id.set()
     except Exception as e:
         logger.exception(e)
 
 
-@dp.message_handler(text='/unsubscribe')
+@dp.message_handler(commands='unsubscribe')
 async def unsubscribe(message: types.Message):
     logger = logging.getLogger('App.handlers.users.default_commands.unsubscribe')
     try:
-        user = db_user.get_user(message.from_user.id)
+        user = db_user.get_user(user_id=message.from_user.id)
         if user.is_active == False:
             await message.answer('Вы и так не подписаны на рассылки')
         else:
@@ -90,7 +90,7 @@ async def unsubscribe(message: types.Message):
 async def get_times(message: types.Message):
     logger = logging.getLogger('App.handlers.users.base_handlers.get_times')
     try:
-        user = db_user.get_user(message.from_user.id)
+        user = db_user.get_user(user_id=message.from_user.id)
         items_message = get_items_message(str(user.id_city))
         await message.answer(items_message)
     except Exception as e:

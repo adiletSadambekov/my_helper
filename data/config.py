@@ -38,3 +38,9 @@ FIRST_USERS_ACCES = int(os.getenv('FIRST_USERS_ACCES'))
 TURNOVER = int(os.getenv('TURNOVER'))
 
 PATH_TIMES_FILE = str(os.getenv('PATH_TIMES_FILE'))
+
+ADMIN_LEVEL = int(os.getenv('ADMIN_LEVEL'))
+
+USER_LEVEL = int(os.getenv('USER_LEVEL'))
+
+ID_ADMIN_LEVEL = int(os.getenv('ID_ADMIN_LEVEL'))

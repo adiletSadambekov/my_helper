@@ -10,14 +10,15 @@ from datetime import time
 
 logging.getLogger('App.parser.parser')
 
-@dataclass(slots=True, frozen=True)
+
 class NamazesTimes:
-    fajr: list[str, str]
-    sunrise: list[str, str]
-    dhuhr: list[str, str]
-    asr: list[str, str]
-    magrib: list[str, str]
-    isha: list[str, str]
+    def __init__(self, fajr, sunrise, dhuhr, asr, magrib, isha) -> None:
+        self.fajr = fajr
+        self.sunrise = sunrise
+        self.dhuhr = dhuhr
+        self.asr = asr
+        self.magrib = magrib
+        self.isha = isha
 
 
 
