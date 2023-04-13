@@ -1,4 +1,3 @@
-from cmath import log
 from data import config
 from db.base_db_funcs import UsersBaseFunctions
 
@@ -51,9 +50,10 @@ async def send_message(message: types.Message, state: FSMContext):
         text = await state.get_data()
         users = users_db.get_all()
         if users:
+            text_mess = 'От @' + message.from_user.username + '\n' + text['message']
             for user in users:
                 try:
-                    await dp.bot.send_message(user.id_in_tg, text['message'])
+                    await dp.bot.send_message(user.id_in_tg, text_mess)
                 except Exception as e:
                     users_db.unsubscribe(username=user.username)
                     logger.exception(e)

@@ -1,5 +1,3 @@
-from ast import ExceptHandler
-import os
 from db.base_db_funcs import UsersBaseFunctions, CityesBaseFunctions
 from data import config
 

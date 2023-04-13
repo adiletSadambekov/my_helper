@@ -17,7 +17,7 @@ GREETINGS_TEXT = str(os.getenv('GREETINGS_TEXT'))
 
 HELP_TEXT = str(os.getenv('HELP_TEXT'))
 
-PATH_CURR_PHOTO = str(os.getenv('PATH_CURR_PHOTO'))
+PATH_CURR_PHOTO = str(os.getenv('PATH_CURR_PHOTO')) # delete it
 
 LIST_USERS = str(os.getenv('LIST_USERS'))
 

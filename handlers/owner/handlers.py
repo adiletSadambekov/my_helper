@@ -78,7 +78,7 @@ async def adding_admin(message: types.Message, state: FSMContext):
             else:
                 user.id_acces_level = config.ID_ADMIN_LEVEL
                 s.commit()
-                await message.reply(user.name + ' назначен админом')
+                await message.reply(user.full_name + ' назначен админом')
         else:
             await message.reply('Такого пользователя не существует')
     except Exception as e:

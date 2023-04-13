@@ -1,4 +1,3 @@
-from fcntl import F_SEAL_SEAL
 from data import config
 from .base import CreateAndCloseSession
 from .models import *
@@ -43,12 +42,32 @@ class UsersBaseFunctions(CreateAndCloseSession):
         except Exception as e:
             logger.exception(e)
             return False
+
+    def get_user(self, user_id=None, username=None) -> User:
+        logger = logging.getLogger(path_log + '.BaseFunctions.get_user')
+        try:
+            if user_id:
+                user = self.s.query(User).where(User.id_in_tg == user_id).scalar()
+                if user:
+                    return user
+                else:
+                    return False
+            if username:
+                user = self.s.query(User).where(User.username == username).scalar()
+                if user:
+                    return user
+                else:
+                    return False
+            else:
+                raise ErrorParametrs
+        except Exception as e:
+            logger.exception(e)
     
 
     def add_user(self, user_date: UserTG, id_city=None):
         logger = logging.getLogger(path_log + '.BaseFunctions.add_user')
         try:
-            user_exists = self.is_exists_by_tg(user_date.id)
+            user_exists = self.get_user(user_date.id)
             if user_exists:
                 raise ErrorAddUser('User is added yet')
             else:
@@ -72,26 +91,6 @@ class UsersBaseFunctions(CreateAndCloseSession):
             logger.exception(e)
 
     
-
-    def get_user(self, user_id=None, username=None) -> User:
-        logger = logging.getLogger(path_log + '.BaseFunctions.get_user')
-        try:
-            if user_id:
-                user = self.s.query(User).where(User.id_in_tg == user_id).scalar()
-                if user:
-                    return user
-                else:
-                    return False
-            if username:
-                user = self.s.query(User).where(User.username == username).scalar()
-                if user:
-                    return user
-                else:
-                    return False
-            else:
-                raise ErrorParametrs
-        except Exception as e:
-            logger.exception(e)
 
 
     def unsubscribe(self, user_id=None, username=None) -> User:
